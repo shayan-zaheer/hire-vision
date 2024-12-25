@@ -2,6 +2,7 @@ const accountSid = process.env.ACCOUNT_SID;
 const authToken = process.env.AUTH_TOKEN;
 const axios = require("axios");
 const { retrieveVectors } = require("../utils/pinecone");
+const { dynamicResponse } = require("../utils/gemini");
 // const client = twilio(accountSid, authToken);
 
 // exports.replyMessage = async (request, response) => {
@@ -47,6 +48,11 @@ exports.replyMessage = async (request, response) => {
     try{
         const query = "Flutter Mobile Application Developer";
         const result = await retrieveVectors(query);
+        let queryResult = result.map((v, i) => {
+            return v.metadata.description;
+        });
+
+        dynamicResponse(query, queryResult);
 
         return response.status(200).json({
             status: "success",
