@@ -11,7 +11,7 @@ exports.replyMessage = async (request, response) => {
         console.log(`Received message from ${userPhoneNumber}: ${userMessage}`);
 
         const dialogflowResponse = await axios.post(
-            "https://dialogflow.googleapis.com/v2/projects/YOUR_PROJECT_ID/agent/sessions/123456:detectIntent",
+            process.env.INTENT_DETECTION,
             {
                 queryInput: {
                     text: {
