@@ -1,18 +1,27 @@
 const { Pinecone } = require("@pinecone-database/pinecone");
 const { HfInference } = require("@huggingface/inference");
 
-exports.retrieveVectors = async (query) => {
-    const pc = new Pinecone({
-        apiKey: process.env.PINECONE_API_KEY,
-    });
+const pc = new Pinecone({
+    apiKey: process.env.PINECONE_API_KEY,
+});
 
-    const index = pc.index("job-listings");
-    const hf = new HfInference(process.env.HUGGINGFACE_API_KEY);
+const hf = new HfInference(process.env.HUGGINGFACE_API_KEY);
+const index = pc.index("job-listings");
 
+const createEmbedding = async(text) => {
     const embedding = await hf.featureExtraction({
         model: "sentence-transformers/all-MiniLM-L6-v2",
-        inputs: query,
+        inputs: text
     });
+    return embedding;
+}
+
+exports.retrieveVectors = async (query) => {   
+    const index = pc.index("job-listings");
+    
+    const embedding = await createEmbedding(query);
+    console.log("QUERY EMBEDDING: \n", embedding);
+
 
     const queryResponse = await index.query({
         vector: embedding,
@@ -23,3 +32,38 @@ exports.retrieveVectors = async (query) => {
 
     return queryResponse.matches;
 };
+
+exports.addData = async(jobId, jobDescription) => {
+    const embedding = await createEmbedding(jobDescription);
+
+     const records = [
+        {
+            id: jobId,
+            values: embedding,
+            metadata: {
+                title: "Mobile Developer",
+                company: "TechCorp",
+                location: "Remote",
+                description: jobDescription
+            }
+        }
+    ];
+
+    try {
+        const upsertResponse = await index.upsert(records);
+        console.log("Upsert successful:", upsertResponse);
+    } catch (error) {
+        console.error("Error during upsert:", error);
+    }
+
+    console.log(`Job ${jobId} has been inserted into Pinecone.`);
+};
+
+exports.deleteData = async(id) => {
+    try {
+        const deleteResponse = await index.delete(id);
+        console.log("Delete successful:", deleteResponse);
+    } catch (error) {
+        console.error("Error during delete:", error);
+    }
+}
