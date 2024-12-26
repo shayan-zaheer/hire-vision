@@ -52,11 +52,11 @@ exports.replyMessage = async (request, response) => {
             return v.metadata.description;
         });
 
-        dynamicResponse(query, queryResult);
+        const res = await dynamicResponse("hirevision", query, queryResult);
 
         return response.status(200).json({
             status: "success",
-            result
+            res
         });
     } catch(err){
         console.log(err);

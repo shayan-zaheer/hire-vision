@@ -1,28 +1,21 @@
-import { createClient } from "redis";
+const { RedisChatMessageHistory } = require("@langchain/community/stores/message/ioredis");
+const { BufferMemory } = require("langchain/memory");
+const Redis = require("ioredis");
 
-const client = createClient({
+const client = new Redis({
     username: "default",
     password: process.env.REDIS_PW,
-    socket: {
-        host: "redis-11983.c263.us-east-1-2.ec2.redns.redis-cloud.com",
-        port: 11983,
-    },
+    host: "redis-11983.c263.us-east-1-2.ec2.redns.redis-cloud.com",
+    port: 11983,
+  });
+
+const redisChatHistory = new RedisChatMessageHistory({
+  client,
+  sessionId: "hirevision-session",
 });
 
-client
-    .connect()
-    .then(() => console.log("Connected to Redis"))
-    .catch((err) => console.error("Redis connection error:", err));
+const redisMemory = new BufferMemory({
+  chatHistory: redisChatHistory,
+});
 
-module.exports = {
-    setContext: async (userId, context) => {
-        await redisClient.set(userId, JSON.stringify(context));
-    },
-    getContext: async (userId) => {
-        const context = await redisClient.get(userId);
-        return context ? JSON.parse(context) : null;
-    },
-    clearContext: async (userId) => {
-        await redisClient.del(userId);
-    },
-};
+module.exports = redisMemory;

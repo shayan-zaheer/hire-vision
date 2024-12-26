@@ -1,0 +1,36 @@
+const generateResponse = async (job_data, user_query) => {
+    const prompt = `
+  You are a chatbot for HireVision that helps people apply for jobs. Your role is to:
+  - Always converse positively and enhance user experience with emojis.
+  - Respond strictly based on the provided job data.
+  - If you can't find relevant jobs, respond with "There are no jobs available as of now."
+  - Do not answer irrelevant questions.
+  
+  Here is the job data: {job_data}
+  
+  Now answer the user query: "{user_query}"`;
+
+    const promptFormatted = prompt
+        .replace("{job_data}", job_data)
+        .replace("{user_query}", user_query);
+
+    try {
+        const result = await model.generateContent(promptFormatted);
+        return result.response.text();
+    } catch (error) {
+        console.error("Error during response generation:", error);
+        return "There was an error processing your request.";
+    }
+};
+
+exports.dynamicResponse = async (userId, originalQuery, [queryResult]) => {
+    const memoryContext = await getRedisData(userId);
+
+    const newContext = memoryContext ? JSON.parse(memoryContext) : [];
+    newContext.push(originalQuery);
+
+    await setRedisData(userId, newContext);
+  
+    const responseText = await generateResponse(JSON.stringify(queryResult), originalQuery);
+    return responseText;
+};
