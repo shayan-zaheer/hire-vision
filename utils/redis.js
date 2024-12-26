@@ -16,6 +16,8 @@ const redisChatHistory = new RedisChatMessageHistory({
 
 const redisMemory = new BufferMemory({
   chatHistory: redisChatHistory,
+  memoryKey: "chat_history",
+  inputKey: "human_input"
 });
 
 module.exports = redisMemory;
