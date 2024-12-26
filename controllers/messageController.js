@@ -46,7 +46,7 @@ const { dynamicResponse } = require("../utils/gemini");
 
 exports.replyMessage = async (request, response) => {
     try{
-        const query = "Flutter Mobile Application Developer";
+        const {query} = request.body;
         const result = await retrieveVectors(query);
         let queryResult = result.map((v, i) => {
             return v.metadata.description;

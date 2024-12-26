@@ -20,8 +20,6 @@ exports.retrieveVectors = async (query) => {
     const index = pc.index("job-listings");
     
     const embedding = await createEmbedding(query);
-    console.log("QUERY EMBEDDING: \n", embedding);
-
 
     const queryResponse = await index.query({
         vector: embedding,
@@ -33,17 +31,16 @@ exports.retrieveVectors = async (query) => {
     return queryResponse.matches;
 };
 
-exports.addData = async(jobId, jobDescription) => {
+exports.addData = async(jobId, jobDescription, title, location) => {
     const embedding = await createEmbedding(jobDescription);
-
      const records = [
         {
             id: jobId,
             values: embedding,
             metadata: {
-                title: "Mobile Developer",
+                title: title,
                 company: "TechCorp",
-                location: "Remote",
+                location: location,
                 description: jobDescription
             }
         }
