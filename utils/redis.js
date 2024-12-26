@@ -1,6 +1,7 @@
 const { RedisChatMessageHistory } = require("@langchain/community/stores/message/ioredis");
 const { BufferMemory } = require("langchain/memory");
 const Redis = require("ioredis");
+const { v4: uuidv4 } = require('uuid');
 
 const client = new Redis({
     username: "default",
@@ -11,7 +12,7 @@ const client = new Redis({
 
 const redisChatHistory = new RedisChatMessageHistory({
   client,
-  sessionId: "hirevision-session",
+  sessionId: uuidv4(),
 });
 
 const redisMemory = new BufferMemory({
