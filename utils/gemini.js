@@ -21,7 +21,7 @@ const promptTemplate = new PromptTemplate({
     - Do not answer irrelevant questions.
     
     Here is the chat history: "{chat_history}
-    
+
     Here are the available job listings: "{job_data}"
 
     Now answer the user query: "{human_input}"`,
@@ -33,7 +33,7 @@ const conversationChain = new ConversationChain({
     prompt: promptTemplate,
 });
 
-exports.dynamicResponse = async (userId, originalQuery, [queryResult]) => {
+exports.dynamicResponse = async (originalQuery, queryResult) => {
     const aiMsg = await conversationChain.invoke({
         human_input: originalQuery,
         job_data: JSON.stringify(queryResult),

@@ -16,6 +16,17 @@ const createEmbedding = async(text) => {
     return embedding;
 }
 
+exports.classifyIntent = async(text) => {
+    const response = await hf.zeroShotClassification({
+        model: "facebook/bart-large-mnli",
+        inputs: text,
+        parameters: {
+            candidate_labels: ['Job Inquiry', 'Greeting', 'General Inquiry', 'Other'],
+        },
+    });
+    return response[0].labels[0];
+};
+
 exports.retrieveVectors = async (query) => {   
     const index = pc.index("job-listings");
     
@@ -31,7 +42,7 @@ exports.retrieveVectors = async (query) => {
     return queryResponse.matches;
 };
 
-exports.addData = async(jobId, jobDescription, title, location) => {
+exports.addData = async(jobId, jobDescription, title, company, location) => {
     const embedding = await createEmbedding(jobDescription);
      const records = [
         {
@@ -39,7 +50,7 @@ exports.addData = async(jobId, jobDescription, title, location) => {
             values: embedding,
             metadata: {
                 title: title,
-                company: "TechCorp",
+                company: company,
                 location: location,
                 description: jobDescription
             }
