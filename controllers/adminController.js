@@ -28,4 +28,4 @@ exports.deleteEmbedding = async(request, response) => {
             message: err.message
         });
     }
-}
+};

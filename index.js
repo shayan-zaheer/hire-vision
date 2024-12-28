@@ -1,5 +1,6 @@
 require("dotenv").config({ path: "./.env" });
 const express = require("express");
+const morgan = require("morgan");
 
 const app = express();
 const configurePassport = require("./utils/passport");
@@ -15,9 +16,12 @@ const messageRoute = require("./routes/messageRoute");
 const adminRoute = require("./routes/adminRoute");
 const authRoute = require("./routes/authRoute");
 
-app.use("/reply", messageRoute);
+app.use(morgan("dev"));
+
+app.use("/webhook", messageRoute);
 app.use("/admin", adminRoute);
 app.use("/auth", authRoute);
+
 
 app.listen(PORT, () => {
     console.log(`Server is running on PORT ${PORT}`);
