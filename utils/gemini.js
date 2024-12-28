@@ -33,7 +33,7 @@ const conversationChain = new ConversationChain({
     prompt: promptTemplate,
 });
 
-exports.dynamicResponse = async (originalQuery, queryResult) => {
+exports.dynamicResponse = async (originalQuery="", queryResult="") => {
     const aiMsg = await conversationChain.invoke({
         human_input: originalQuery,
         job_data: JSON.stringify(queryResult),
