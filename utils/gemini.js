@@ -17,6 +17,7 @@ const promptTemplate = new PromptTemplate({
     - Always converse positively and enhance user experience with emojis.
     - Respond strictly based on the provided job data.
     - If you can't find relevant jobs, respond with 'There are no jobs available as of now.'
+    - If it's the user's first message, tell him to say "Hi" or "Hello" to get started.
     - If someone asks questions related to your technologies, tell them.
     - Do not answer irrelevant questions.
     

@@ -1,95 +1,82 @@
-const accountSid = process.env.ACCOUNT_SID;
-const authToken = process.env.AUTH_TOKEN;
-const twilio = require("twilio");
 const axios = require("axios");
-const ResumeParser = require("simple-resume-parser");
-const { retrieveVectors } = require("../utils/pinecone");
+// const ResumeParser = require("simple-resume-parser");
+const { retrieveVectors, classifyIntent } = require("../utils/pinecone");
 const { dynamicResponse } = require("../utils/gemini");
-const { sendImage, uploadImage } = require("../utils/whatsapp");
-const client = twilio(accountSid, authToken);
-
-// exports.replyMessage = async (request, response) => {
-//     try {
-//         let { Body: query, From: userNumber, NumMedia } = request.body;
-//         console.log(request.body);
-
-//         if (NumMedia > 0) {
-//             const {MediaUrl0: mediaUrl, MediaContentType0: contentType} = request.body;
-
-//             if (contentType === "application/pdf") {
-//                 query = "Sent PDF!";
-
-//                 const dirPath = "./received_files";
-//                 if (!fs.existsSync(dirPath)) {
-//                     fs.mkdirSync(dirPath, { recursive: true });
-//                 }
-
-//                 const response = await axios.get(mediaUrl, {
-//                     headers: {
-//                         Authorization: `Basic ${Buffer.from(`${accountSid}:${authToken}`).toString('base64')}`,
-//                     },
-//                     responseType: "stream",
-//                 });
-
-//                 const pdfPath = `${dirPath}/${Date.now()}.pdf`;
-//                 const writeStream = fs.createWriteStream(pdfPath);
-//                 response.data.pipe(writeStream);
-
-//                 console.log("PDF saved:", pdfPath);
-//             } else {
-//                 query = "Non-PDF Media Sent!";
-//                 console.log("Non-PDF media received:", contentType);
-//             }
-//         }
-
-//         const result = await retrieveVectors(query);
-//         let queryResult = result.map((v, i) => {
-//             return v.metadata.description;
-//         });
-
-//         const {response: res} = await dynamicResponse(query, queryResult);
-
-//         await client.messages.create({
-//             body: res,
-//             from: "whatsapp:+14155238886",
-//             to: userNumber,
-//         });
-
-//         return response.status(200).json({
-//             status: "success",
-//             res,
-//         });
-//     } catch (err) {
-//         console.log(err);
-//         return response.status(400).json({
-//             status: "failure",
-//             message: err,
-//         });
-//     }
-// };
 
 exports.sendMessage = async (request, response) => {
-    const message = request.body.entry?.[0]?.changes[0]?.value?.messages?.[0];
+    const message = request.body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
+    const business_phone_number_id =
+        request.body.entry?.[0]?.changes?.[0]?.value?.metadata?.phone_number_id;
 
-    if (message?.type === "text") {
-        const business_phone_number_id =
-            request.body.entry?.[0].changes?.[0].value?.metadata
-                ?.phone_number_id;
+    if (!business_phone_number_id) {
+        return response.status(400).send("Missing phone number ID");
+    }
 
-        let queryResult = "";
-        let query = message?.text?.body;
+    let res = null;
 
-        if (query.toLowerCase().includes("job")) {
-            const result = await retrieveVectors(query);
+    try {
+        if (message?.type === "text") {
+            const intent = await classifyIntent(message?.text?.body);
 
-            if (result.length > 0) {
-                queryResult = result.map((job, index) => ({
+            if (intent === "Salutations") {
+                const user =
+                    request.body.entry?.[0]?.changes?.[0]?.value?.contacts?.[0];
+                const userName = user?.profile?.name || "there";
+
+                res = {
+                    messaging_product: "whatsapp",
+                    to: message.from,
+                    type: "interactive",
+                    interactive: {
+                        type: "button",
+                        header: {
+                            type: "text",
+                            text: `Hi ${userName}! 👋`,
+                        },
+                        body: {
+                            text: "I'm HireVision AI assistant here to help you find your next opportunity. I'm optimistic about helping you discover the perfect job! 😊",
+                        },
+                        footer: {
+                            text: "Ready to explore?",
+                        },
+                        action: {
+                            buttons: [
+                                {
+                                    type: "reply",
+                                    reply: {
+                                        id: "view_jobs",
+                                        title: "View Jobs",
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                };
+            } else {
+                const { response: dynamicRes } = await dynamicResponse(
+                    message?.text?.body
+                );
+                res = {
+                    messaging_product: "whatsapp",
+                    to: message.from,
+                    type: "text",
+                    text: {
+                        body: dynamicRes,
+                    },
+                };
+            }
+        } else if (message?.interactive?.button_reply) {
+            const buttonId = message?.interactive?.button_reply?.id;
+
+            if (buttonId === "view_jobs") {
+                const result = await retrieveVectors(message?.interactive?.button_reply?.title);
+
+                const queryResult = result.map((job, index) => ({
                     id: job.id,
                     title: job.metadata.title || `Job ${index + 1}`,
-                    description: job.metadata.description.substring(0, 71)
                 }));
 
-                const interactiveMessage = {
+                res = {
                     messaging_product: "whatsapp",
                     to: message.from,
                     type: "interactive",
@@ -113,58 +100,55 @@ exports.sendMessage = async (request, response) => {
                                     rows: queryResult.map((job) => ({
                                         id: job.id,
                                         title: job.title,
-                                        description: job.description,
                                     })),
                                 },
                             ],
                         },
                     },
                 };
-
-                await axios.post(
-                    `https://graph.facebook.com/v21.0/${business_phone_number_id}/messages`,
-                    interactiveMessage,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
-                        },
-                    }
-                );
-                // queryResult = result.map((v, i) => {
-                //     return v.metadata.description;
-                // });
             }
+        } else if (message?.interactive?.list_reply) {
+            const listReply = message?.interactive?.list_reply;
+            console.log(listReply);
 
-            // const { response: res } = await dynamicResponse(query, queryResult);
+            if (listReply) {
+                const selectedJob = listReply?.title;
 
-            // await axios({
-            //     method: "POST",
-            //     url: `https://graph.facebook.com/v21.0/${business_phone_number_id}/messages`,
-            //     headers: {
-            //         Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
-            //     },
-            //     data: {
-            //         messaging_product: "whatsapp",
-            //         to: message.from,
-            //         text: { body: res }
-            //     },
-            // });
-
-            await axios({
-                method: "POST",
-                url: `https://graph.facebook.com/v21.0/${business_phone_number_id}/messages`,
-                headers: {
-                    Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
-                },
-                data: {
+                res = {
                     messaging_product: "whatsapp",
-                    status: "read",
-                    message_id: message.id,
-                },
-            });
+                    to: message.from,
+                    type: "text",
+                    text: {
+                        body: `Here are the details for the selected job:\n\n*${selectedJob}`,
+                    },
+                };
+            }
+        } else if (message?.type === "document"){
+            const fileId = message?.document?.id;
+            const fileName = message?.document?.filename;
+            downloadFile(fileId, fileName);
+        }
+
+        if (res) {
+            await axios.post(
+                `https://graph.facebook.com/v21.0/${business_phone_number_id}/messages`,
+                res,
+                {
+                    headers: {
+                        Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
+                    },
+                }
+            );
         }
 
         response.sendStatus(200);
+    } catch (error) {
+        console.error("ERROR:\n",error);
+        response.status(500).json({
+            status: "failure",
+            message: error.message,
+            stack: error.stack
+        });
     }
 };
 
@@ -180,6 +164,8 @@ exports.receiveMessage = async (request, response) => {
         response.sendStatus(403);
     }
 };
+
+// RESUME PARSING (WILL CHECK LATER!)
 
 // const resume = new ResumeParser("./resumes/Shayan Zaheer - Resume.pdf");
 

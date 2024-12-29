@@ -21,7 +21,7 @@ exports.classifyIntent = async(text) => {
         model: "facebook/bart-large-mnli",
         inputs: text,
         parameters: {
-            candidate_labels: ['Job Inquiry', 'Greeting', 'General Inquiry', 'Other'],
+            candidate_labels: ['Coding and Development Jobs', 'Salutations', 'Other'],
         },
     });
     return response[0].labels[0];
