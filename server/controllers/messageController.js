@@ -1,7 +1,8 @@
 const axios = require("axios");
-// const ResumeParser = require("simple-resume-parser");
 const { retrieveVectors, classifyIntent } = require("../utils/pinecone");
 const { dynamicResponse } = require("../utils/gemini");
+const pdf = require('pdf-parse');
+const fs = require('fs');
 
 exports.sendMessage = async (request, response) => {
     const message = request.body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
@@ -126,9 +127,8 @@ exports.sendMessage = async (request, response) => {
         } else if (message?.type === "document"){
             const fileId = message?.document?.id;
             const fileName = message?.document?.filename;
-            downloadFile(fileId, fileName);
         }
-
+        
         if (res) {
             await axios.post(
                 `https://graph.facebook.com/v21.0/${business_phone_number_id}/messages`,
@@ -140,7 +140,7 @@ exports.sendMessage = async (request, response) => {
                 }
             );
         }
-
+        
         response.sendStatus(200);
     } catch (error) {
         console.error("ERROR:\n",error);
@@ -156,7 +156,7 @@ exports.receiveMessage = async (request, response) => {
     const mode = request.query["hub.mode"];
     const token = request.query["hub.verify_token"];
     const challenge = request.query["hub.challenge"];
-
+    
     if (mode === "subscribe" && token === process.env.WEBHOOK_VERIFY_TOKEN) {
         response.status(200).send(challenge);
         console.log("Webhook verified successfully!");
@@ -164,15 +164,9 @@ exports.receiveMessage = async (request, response) => {
         response.sendStatus(403);
     }
 };
-
-// RESUME PARSING (WILL CHECK LATER!)
-
-// const resume = new ResumeParser("./resumes/Shayan Zaheer - Resume.pdf");
-
-// resume.parseToJSON()
-// .then(data => {
-//     console.log('Yay! ', data);
-// })
-// .catch(error => {
-//     console.error(error);
-// });
+        
+        // const dataBuffer = fs.readFileSync(filePath);
+        
+        // const data = await pdf(dataBuffer);
+        // const dynamicRes = await dynamicResponse("Entertain the data only if it's a CV data and clean the data if required and turn it into JSON format. Keep in mind that I only require the JSON formatted file, no newline characters, and the data must be readable.", data.text);
+        // console.log(dynamicRes);    

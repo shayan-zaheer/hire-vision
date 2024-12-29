@@ -10,6 +10,31 @@ const model = new ChatGoogleGenerativeAI({
     apiKey: process.env.GEMINI_API_KEY,
 });
 
+// const sample = JSON.stringify({
+//     "name": "",
+//     "contact": {
+//     },
+//     "education": {
+//     },
+//     "profileSummary": "",
+//     "projects": [
+//     ],
+//     "achievements": [
+//     ],
+//     "skills": {
+//         "programming": [
+//         ],
+//         "tools": []
+//     }
+// });
+
+// - If asked to extract the data from a CV, follow the same structure as provided.
+
+// {resume_sample}
+
+// - Notice that it can be that there are some tags that do not match with the format, so include them too, and if there are some tags that are in the format but not in the original one, so discard them, but the contact one should remain the same regardless of anything.
+
+
 const promptTemplate = new PromptTemplate({
     inputVariables: ["chat_history", "human_input", "job_data"],
     template: `
@@ -34,10 +59,10 @@ const conversationChain = new ConversationChain({
     prompt: promptTemplate,
 });
 
-exports.dynamicResponse = async (originalQuery="", queryResult="") => {
+exports.dynamicResponse = async (originalQuery = "", queryResult = "") => {
     const aiMsg = await conversationChain.invoke({
         human_input: originalQuery,
-        job_data: JSON.stringify(queryResult),
+        job_data: JSON.stringify(queryResult)
     });
 
     return aiMsg;
