@@ -12,6 +12,12 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      fontFamily: {
+        "gilroy": ["var(--font-gilroy)"]
+      },
+      backgroundImage: {
+        'custom-gradient': 'linear-gradient(to bottom, #DDA82A 0%, #4461F2 100%)',
+      },
     },
   },
   plugins: [],
