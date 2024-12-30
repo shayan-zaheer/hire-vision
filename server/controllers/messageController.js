@@ -1,5 +1,5 @@
 const axios = require("axios");
-const { retrieveVectors, classifyIntent } = require("../utils/pinecone");
+const { retrieveVectors, classifyIntent, getSimilarity } = require("../utils/pinecone");
 const { dynamicResponse } = require("../utils/gemini");
 const pdf = require('pdf-parse');
 const fs = require('fs');
@@ -127,6 +127,23 @@ exports.sendMessage = async (request, response) => {
         } else if (message?.type === "document"){
             const fileId = message?.document?.id;
             const fileName = message?.document?.filename;
+
+            const filePath = "../Shayan Zaheer - Resume.pdf";
+            const dataBuffer = fs.readFileSync(filePath);
+            const data = await pdf(dataBuffer);
+
+            const {score, description} = await getSimilarity(data?.text);
+
+            const response = await dynamicResponse("You are being given a parsed resume, a job description, and a similarity score (cosine similarity). You have to justify the similarity and also tell if there is anything lacking. This response is to be sent to an admin who will determine whether to accept or reject the candidate.", `Resume: ${data?.text}\n\nJob Description: ${description?.metadata?.description}\n\nScore: ${score}.`)
+            
+            res = {
+                messaging_product: "whatsapp",
+                to: message.from,
+                type: "text",
+                text: {
+                    body: response?.response,
+                },
+            };
         }
         
         if (res) {
@@ -136,6 +153,7 @@ exports.sendMessage = async (request, response) => {
                 {
                     headers: {
                         Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
+                        "Content-Type": 'application/x-www-form-urlencoded',
                     },
                 }
             );
@@ -143,7 +161,7 @@ exports.sendMessage = async (request, response) => {
         
         response.sendStatus(200);
     } catch (error) {
-        console.error("ERROR:\n",error);
+        console.error("ERROR:\n",error?.response?.data);
         response.status(500).json({
             status: "failure",
             message: error.message,
@@ -165,8 +183,6 @@ exports.receiveMessage = async (request, response) => {
     }
 };
         
-        // const dataBuffer = fs.readFileSync(filePath);
         
-        // const data = await pdf(dataBuffer);
         // const dynamicRes = await dynamicResponse("Entertain the data only if it's a CV data and clean the data if required and turn it into JSON format. Keep in mind that I only require the JSON formatted file, no newline characters, and the data must be readable.", data.text);
         // console.log(dynamicRes);    

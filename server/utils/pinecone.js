@@ -42,6 +42,20 @@ exports.retrieveVectors = async (query) => {
     return queryResponse.matches;
 };
 
+exports.getSimilarity = async (resumeData) => {   
+    const index = pc.index("job-listings");
+    const embedding = await createEmbedding(resumeData);
+
+    const queryResponse = await index.query({
+        vector: embedding,
+        topK: 1,
+        includeValues: true,
+        includeMetadata: true,
+    });
+
+    return {score: queryResponse.matches[0].score, description: queryResponse.matches[0]}
+};
+
 exports.addData = async(jobId, jobDescription, title, company, location) => {
     const embedding = await createEmbedding(jobDescription);
      const records = [
