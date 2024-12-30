@@ -60,7 +60,9 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <body className={gilroy.variable}>{children}</body>
+            <body className={gilroy.variable}>
+                {children}
+                </body>
         </html>
     );
 }

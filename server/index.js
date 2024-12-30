@@ -1,9 +1,16 @@
 require("dotenv").config({ path: "./.env" });
 const express = require("express");
 const morgan = require("morgan");
+const cors = require("cors");
 
 const app = express();
 const configurePassport = require("./utils/passport");
+
+app.use(cors({
+    origin: ["http://localhost:3000"],
+    methods: ["GET", "POST"],
+    credentials: true
+}));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
