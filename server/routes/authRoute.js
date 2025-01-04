@@ -24,7 +24,7 @@ router
     .get(
         passport.authenticate("google", { failureRedirect: "/" }),
         (request, response) => {
-            response.redirect("http://localhost:3000/");
+            response.redirect("http://localhost:3000/dashboard");
         }
     );
 
@@ -37,7 +37,7 @@ router
     .get(
         passport.authenticate("github", { failureRedirect: "/" }),
         (request, response) => {
-            response.redirect("http://localhost:3000/");
+            response.redirect("http://localhost:3000/dashboard");
         }
     );
 

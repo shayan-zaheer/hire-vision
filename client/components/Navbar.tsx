@@ -5,19 +5,19 @@ import { headers } from "next/headers";
 async function fetchStatus() {
     try {
         const headersList = await headers();
-        const cookies = headersList.get('cookie') || '';
-        
+        const cookies = headersList.get("cookie") || "";
+
         const response = await fetch("http://localhost:8000/auth/status", {
             headers: {
-                Cookie: cookies
+                Cookie: cookies,
             },
-            cache: 'no-cache'
+            cache: "no-cache",
         });
-        
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         return response.json();
     } catch (error) {
         console.error("Error fetching status:", error);
@@ -37,8 +37,30 @@ async function Navbar() {
     const isAuthenticated = data?.status === "authenticated";
 
     return (
-        <nav className="h-20 flex items-center justify-end px-6 bg-[#14162e] text-white font-gilroy">
-            <ul className="relative flex items-center gap-4">
+        <nav className="h-[10vh] flex justify-between px-6 bg-[#14162e] text-white font-gilroy">
+            <ul className="flex items-center gap-4">
+                {isAuthenticated && (
+                    <>
+                        <li>
+                            <Link
+                                href="/dashboard"
+                                className="hover:underline hover:text-gray-300 transition-colors duration-200"
+                            >
+                                Dashboard
+                            </Link>
+                        </li>
+                        <li className="relative">
+                            <Link
+                                href="/jobs"
+                                className="hover:underline hover:text-gray-300 transition-colors duration-200"
+                            >
+                                Jobs
+                            </Link>
+                        </li>
+                   </>
+                )}
+            </ul>
+            <ul className="flex items-center gap-4">
                 {isAuthenticated ? (
                     <>
                         {data?.profile?.photos?.[0]?.value && (
