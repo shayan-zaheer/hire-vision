@@ -11,7 +11,7 @@ function page() {
                         <div className="max-sm:size-20 size-32 bg-[#DDA82A] blur-3xl"></div>
                         <div className="max-sm:size-20 size-32 bg-[#4461F2] blur-3xl mx-24"></div>
                     </div>
-                    <h1 className="text-5xl font-bold absolute z-10 leading-snug max-sm:text-center max-sm:top-1/4 max-sm:left-1/2 max-sm:-translate-x-1/2 ">
+                    <h1 className="text-5xl font-bold absolute z-10 leading-snug max-sm:text-center max-sm:top-1/4 max-sm:left-1/2 max-sm:-translate-x-1/2">
                         Sign In to <br /> HireVision
                     </h1>
                 </div>

@@ -49,12 +49,20 @@ async function Navbar() {
                                 Dashboard
                             </Link>
                         </li>
-                        <li className="relative">
+                        <li>
                             <Link
                                 href="/jobs"
                                 className="hover:underline hover:text-gray-300 transition-colors duration-200"
                             >
                                 Jobs
+                            </Link>
+                        </li>
+                        <li>
+                            <Link
+                                href="/resumes"
+                                className="hover:underline hover:text-gray-300 transition-colors duration-200"
+                            >
+                                Resumes
                             </Link>
                         </li>
                    </>

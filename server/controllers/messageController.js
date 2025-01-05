@@ -125,10 +125,10 @@ exports.sendMessage = async (request, response) => {
                 };
             }
         } else if (message?.type === "document"){
+
             const fileId = message?.document?.id;
             const fileName = message?.document?.filename;
 
-            const filePath = "../Shayan Zaheer - Resume.pdf";
             const dataBuffer = fs.readFileSync(filePath);
             const data = await pdf(dataBuffer);
 
@@ -161,7 +161,8 @@ exports.sendMessage = async (request, response) => {
         
         response.sendStatus(200);
     } catch (error) {
-        console.error("ERROR:\n",error?.response?.data);
+        console.error("ERROR:\n",error
+        );
         response.status(500).json({
             status: "failure",
             message: error.message,
