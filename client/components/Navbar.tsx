@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { headers } from "next/headers";
+import ProfileDropdown from "./ProfileDropdown";
 
 async function fetchStatus() {
     try {
@@ -33,6 +34,8 @@ async function Navbar() {
         console.error("Failed to fetch status:", error);
         data = { status: "unauthenticated", profile: null };
     }
+
+    console.log(data);
 
     const isAuthenticated = data?.status === "authenticated";
 
@@ -70,27 +73,7 @@ async function Navbar() {
             </ul>
             <ul className="flex items-center gap-4">
                 {isAuthenticated ? (
-                    <>
-                        {data?.profile?.photos?.[0]?.value && (
-                            <div className="w-8 h-8 relative">
-                                <Image
-                                    src={data.profile.photos[0].value}
-                                    fill
-                                    sizes="32px"
-                                    alt="profile"
-                                    className="rounded-full object-cover"
-                                />
-                            </div>
-                        )}
-                        <li>
-                            <Link
-                                href="http://localhost:8000/auth/logout"
-                                className="hover:underline hover:text-gray-300 transition-colors duration-200"
-                            >
-                                Logout
-                            </Link>
-                        </li>
-                    </>
+                    <ProfileDropdown profile={data.profile} />
                 ) : (
                     <>
                         <li>

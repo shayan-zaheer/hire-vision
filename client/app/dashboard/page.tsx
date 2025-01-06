@@ -1,15 +1,15 @@
 import React from "react";
 import Navbar from "@/components/Navbar";
-import LineGraph from "@/components/Line";
-import BarGraph from "@/components/Bar";
-import PieGraph from "@/components/Pie";
+import LineGraph from "@/components/graphs/Line";
+import BarGraph from "@/components/graphs/Bar";
+import PieGraph from "@/components/graphs/Pie";
 
 function Dashboard() {
     return (
         <div className="bg-[#14162e] text-white font-gilroy min-h-screen">
             <Navbar />
             <div className="px-8 py-12">
-                <h1 className="text-5xl font-bold text-center mb-12">
+                <h1 className="text-3xl sm:text-5xl font-bold mt-4 sm:mt-8 text-center mb-12">
                     Admin Dashboard
                 </h1>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
