@@ -1,7 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Form from "next/form";
 import { headers } from "next/headers";
-import toast from "react-hot-toast";
 
 function page() {
     const addData = async (formData: FormData) => {

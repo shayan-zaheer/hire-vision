@@ -23,7 +23,7 @@ ChartJS.register(
 );
 
 function LineGraph() {
-    return <Line className="px-8" options={options} data={data} />;
+    return <Line options={options} data={data} />;
 }
 
 export default LineGraph;
