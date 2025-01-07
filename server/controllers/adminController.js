@@ -36,3 +36,19 @@ exports.deleteEmbedding = async(request, response) => {
         });
     }
 };
+
+exports.getAllJobs = async(request, response) => {
+    try{
+        const jobs = await Job.find({postedBy: request?.user?._id});
+        return response.status(200).json({
+            status: "success",
+            jobs
+        });
+    } catch(err){
+        console.error(err);
+        return response.status(400).json({
+            status: "failure",
+            message: err.message
+        });
+    }
+}

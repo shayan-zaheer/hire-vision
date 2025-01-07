@@ -2,7 +2,13 @@ import Navbar from "@/components/Navbar";
 import Form from "next/form";
 import { headers } from "next/headers";
 
-function page() {
+interface Job{
+   _id: string,
+   title: string,
+   description: string 
+};
+
+async function page() {
     const addData = async (formData: FormData) => {
         "use server";
         try {
@@ -31,6 +37,30 @@ function page() {
             console.error(err);
         }
     };
+
+    const getAllJobs = async () => {
+        try {
+            const headersList = await headers();
+            const cookies = headersList.get("cookie") || "";
+
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/all-jobs`, {
+                headers: {
+                    Cookie: cookies
+                },
+                cache: "no-cache"
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to retrieve jobs: ${response.statusText}`);
+            }
+
+            return response.json();
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    let {jobs} = await getAllJobs();
 
     return (
         <div className="bg-[#14162e] text-white font-gilroy">
@@ -71,14 +101,21 @@ function page() {
                             Existing Jobs
                         </h2>
                         <ul className="space-y-4">
-                            <li className="p-4 bg-[#14162e] rounded-md flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                            {jobs && jobs.map((job: Job)=> (
+                                <li className="p-4 bg-[#14162e] rounded-md flex flex-col sm:flex-row sm:justify-between sm:items-center" key={job?._id}>
                                 <div className="text-center sm:text-left">
                                     <h3 className="text-lg font-bold">
-                                        Frontend Developer
+                                        {job?.title}
                                     </h3>
-                                    <p className="text-sm text-gray-400">
-                                        TechCorp LTD.
+                                    <h2 className="text-sm font-semibold italic">
+                                        Job Description:
+                                    </h2>
+                                    <p className="text-sm text-justify sm:pr-8 text-gray-400">
+                                        {job?.description}
                                     </p>
+                                    <h2 className="text-sm font-semibold italic">
+                                        Requirements:
+                                    </h2>
                                 </div>
                                 <div className="flex justify-center sm:justify-between space-x-2 mt-4 sm:mt-0">
                                     <button className="px-4 py-2 bg-[#DDA82A] rounded-md font-semibold hover:bg-[#c38d25] transition">
@@ -89,6 +126,7 @@ function page() {
                                     </button>
                                 </div>
                             </li>
+                            ))}
                         </ul>
                     </div>
                 </div>
