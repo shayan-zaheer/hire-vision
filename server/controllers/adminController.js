@@ -1,14 +1,21 @@
-const { addData, deleteData } = require("../utils/pinecone")
+const Job = require("../models/job");
+const { addData, deleteData } = require("../utils/pinecone");
+const { cleanJobDescription } = require("../utils/shortfuncs");
 
 exports.addEmbedding = async(request, response) => {
     try{
-        const {jobId, jobDescription} = request.body;
-        addData(jobId, jobDescription);
+        let userId = request?.user?._id;
+        let {jobId, jobDescription, title} = request.body;
+        jobDescription = cleanJobDescription(jobDescription);
+        addData(jobId, jobDescription, title);
+
+        await Job.create({title, description: jobDescription, postedBy: userId});
 
         return response.status(201).json({
             status: "success"
         })
     } catch(err){
+        console.error(err);
         return response.status(400).json({
             status: "failure",
             message: err.message

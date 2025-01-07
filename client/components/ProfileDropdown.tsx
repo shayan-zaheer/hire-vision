@@ -28,7 +28,7 @@ export default function ProfileDropdown({ profile } : {profile: Profile}) {
                     width={40}
                     height={40}
                     alt="profile"
-                    className="rounded-full object-cover border border-green-500"
+                    className="max-sm:size-8 rounded-full object-cover border border-green-500"
                 />
             </div>
 

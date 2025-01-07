@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { Toaster } from "react-hot-toast";
 
 const gilroy = localFont({
     src: [
@@ -61,6 +62,7 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={gilroy.variable}>
+                <Toaster />
                 {children}
                 </body>
         </html>

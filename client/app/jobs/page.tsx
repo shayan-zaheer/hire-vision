@@ -1,24 +1,60 @@
 import Navbar from "@/components/Navbar";
+import Form from "next/form";
+import { headers } from "next/headers";
+import toast from "react-hot-toast";
 
 function page() {
+    const addData = async (formData: FormData) => {
+        "use server";
+        try {
+            const title = formData.get("title");
+            const jobDescription = formData.get("description");
+
+            const headersList = await headers();
+            const cookies = headersList.get("cookie") || "";
+
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/add-job`, {
+                method: "POST",
+                headers: {
+                    Cookie: cookies,
+                    "Content-Type": "application/json",
+                },
+                cache: "no-cache",
+                body: JSON.stringify({ jobId: "job3", jobDescription, title }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to save job: ${response.statusText}`);
+            }
+
+            const result = await response.json();
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
     return (
         <div className="bg-[#14162e] text-white font-gilroy">
             <Navbar />
             <div className="min-h-[90vh] flex flex-col items-center px-4 sm:px-10 py-6">
-                <h1 className="text-3xl sm:text-5xl font-bold mt-4 sm:mt-8 text-center">Manage Jobs</h1>
+                <h1 className="text-3xl sm:text-5xl font-bold mt-4 sm:mt-8 text-center">
+                    Manage Jobs
+                </h1>
                 <div className="w-full max-w-2xl sm:max-w-4xl mt-6 sm:mt-8 space-y-6">
                     <div className="bg-[#1b1f3a] p-4 sm:p-6 rounded-md shadow-md">
                         <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-center sm:text-left">
                             Create / Update Job
                         </h2>
-                        <form className="space-y-4">
+                        <Form action={addData} className="space-y-4">
                             <input
                                 type="text"
+                                name="title"
                                 placeholder="Job Title"
                                 className="w-full p-2 sm:p-3 bg-[#14162e] border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4461F2]"
                             />
                             <textarea
                                 placeholder="Job Description"
+                                name="description"
                                 rows={4}
                                 className="w-full p-2 sm:p-3 bg-[#14162e] border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4461F2]"
                             ></textarea>
@@ -28,7 +64,7 @@ function page() {
                             >
                                 Save Job
                             </button>
-                        </form>
+                        </Form>
                     </div>
 
                     <div className="bg-[#1b1f3a] p-4 sm:p-6 rounded-md shadow-md">
@@ -38,8 +74,12 @@ function page() {
                         <ul className="space-y-4">
                             <li className="p-4 bg-[#14162e] rounded-md flex flex-col sm:flex-row sm:justify-between sm:items-center">
                                 <div className="text-center sm:text-left">
-                                    <h3 className="text-lg font-bold">Frontend Developer</h3>
-                                    <p className="text-sm text-gray-400">TechCorp LTD.</p>
+                                    <h3 className="text-lg font-bold">
+                                        Frontend Developer
+                                    </h3>
+                                    <p className="text-sm text-gray-400">
+                                        TechCorp LTD.
+                                    </p>
                                 </div>
                                 <div className="flex justify-center sm:justify-between space-x-2 mt-4 sm:mt-0">
                                     <button className="px-4 py-2 bg-[#DDA82A] rounded-md font-semibold hover:bg-[#c38d25] transition">

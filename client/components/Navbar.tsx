@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { headers } from "next/headers";
 import ProfileDropdown from "./ProfileDropdown";
 
@@ -40,7 +39,7 @@ async function Navbar() {
     const isAuthenticated = data?.status === "authenticated";
 
     return (
-        <nav className="h-[10vh] flex justify-between px-6 bg-[#14162e] text-white font-gilroy">
+        <nav className="h-[10vh] flex justify-between px-6 bg-[#14162e] text-white font-gilroy max-sm:text-sm">
             <ul className="flex items-center gap-4">
                 {isAuthenticated && (
                     <>

@@ -56,7 +56,7 @@ exports.getSimilarity = async (resumeData) => {
     return {score: queryResponse.matches[0].score, description: queryResponse.matches[0]}
 };
 
-exports.addData = async(jobId, jobDescription, title, company, location) => {
+exports.addData = async(jobId, jobDescription, title) => {
     const embedding = await createEmbedding(jobDescription);
      const records = [
         {
@@ -64,8 +64,6 @@ exports.addData = async(jobId, jobDescription, title, company, location) => {
             values: embedding,
             metadata: {
                 title: title,
-                company: company,
-                location: location,
                 description: jobDescription
             }
         }
