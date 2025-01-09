@@ -1,6 +1,11 @@
 const Job = require("../models/job");
 const { addData, deleteData } = require("../utils/pinecone");
 const { cleanJobDescription } = require("../utils/shortfuncs");
+const {
+	generateBlobSASQueryParameters,
+	BlobSASPermissions,
+} = require("@azure/storage-blob");
+const {sharedKeyCredential, containerClient, containerName} = require("../utils/azure");	
 
 exports.addEmbedding = async(request, response) => {
     try{
@@ -52,3 +57,34 @@ exports.getAllJobs = async(request, response) => {
         });
     }
 }
+
+exports.getResumes = async(request, response) => {
+    try{
+        const blobClient = containerClient.getBlobClient("Shayan Zaheer - Resume.pdf");
+
+		const expiryDate = new Date();
+		expiryDate.setMinutes(expiryDate.getMinutes() + 200);
+
+		const sasToken = generateBlobSASQueryParameters(
+			{
+				containerName,
+				blobName: "Shayan Zaheer - Resume.pdf",
+				permissions: BlobSASPermissions.parse("r"),
+				startsOn: new Date(),
+				expiresOn: expiryDate,
+				protocol: "https",
+				version: "2020-08-04",
+			},
+			sharedKeyCredential
+		).toString();
+
+		const pdfUrl = `${blobClient.url}?${sasToken}`;
+
+        return response.status(200).json({
+            status: "success",
+            pdf: pdfUrl
+        })
+    } catch(err){
+        console.error(err);
+    }
+};

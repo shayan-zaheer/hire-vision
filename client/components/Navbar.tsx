@@ -34,8 +34,6 @@ async function Navbar() {
         data = { status: "unauthenticated", profile: null };
     }
 
-    console.log(data);
-
     const isAuthenticated = data?.status === "authenticated";
 
     return (

@@ -1,9 +1,44 @@
+import Modal from "@/components/Modal";
 import Navbar from "@/components/Navbar";
+import { headers } from "next/headers";
 
-function page() {
+const getResumes = async () => {
+    try {
+        const headersList = await headers();
+        const cookies = headersList.get("cookie") || "";
+
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/admin/resumes`,
+            {
+                headers: {
+                    Cookie: cookies,
+                },
+                cache: "no-cache",
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                `Failed to retrieve jobs: ${response.statusText}`
+            );
+        }
+
+        return response.json();
+    } catch (err) {
+        console.error(err);
+    }
+};
+
+async function page() {
+    let {pdf} = await getResumes();
+    console.log(pdf);
+
     return (
         <div className="bg-[#14162e] text-white font-gilroy">
             <Navbar />
+            <Modal>
+                <embed src={pdf} />
+            </Modal>
             <div className="min-h-[90vh] flex flex-col items-center">
                 <h1 className="text-5xl font-bold mt-8">Review Resumes</h1>
                 <div className="w-full max-w-4xl mt-8 space-y-4">

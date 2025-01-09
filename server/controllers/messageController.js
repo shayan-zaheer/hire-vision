@@ -1,6 +1,7 @@
 const axios = require("axios");
 const { retrieveVectors, classifyIntent, getSimilarity } = require("../utils/pinecone");
 const { dynamicResponse } = require("../utils/gemini");
+// const blobServiceClient = require("../utils/azure");
 const pdf = require('pdf-parse');
 const fs = require('fs');
 
@@ -125,12 +126,32 @@ exports.sendMessage = async (request, response) => {
                 };
             }
         } else if (message?.type === "document"){
-
             const fileId = message?.document?.id;
-            const fileName = message?.document?.filename;
 
-            const dataBuffer = fs.readFileSync(filePath);
-            const data = await pdf(dataBuffer);
+            const link = await axios.get(
+                `https://graph.facebook.com/v21.0/${fileId}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`
+                    },
+                }
+            );
+
+            const file = await axios.get(link?.data?.url,
+                {
+                    headers: {
+                        Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`
+                    },
+                    responseType: 'arraybuffer'
+                }
+            );
+
+            
+
+            const fileBuffer = Buffer.from(file?.data);
+            const data = await pdf(fileBuffer);
+
+            console.log('Text File Content:', data?.text);
 
             const {score, description} = await getSimilarity(data?.text);
 
@@ -152,8 +173,7 @@ exports.sendMessage = async (request, response) => {
                 res,
                 {
                     headers: {
-                        Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`,
-                        "Content-Type": 'application/x-www-form-urlencoded',
+                        Authorization: `Bearer ${process.env.WHATSAPP_TOKEN}`
                     },
                 }
             );
