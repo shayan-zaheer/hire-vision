@@ -9,7 +9,7 @@ interface Job {
     description: string;
 }
 
-async function page() {
+async function Jobs() {
     const addData = async (formData: FormData) => {
         "use server";
         try {
@@ -156,4 +156,4 @@ async function page() {
     );
 }
 
-export default page;
+export default Jobs;

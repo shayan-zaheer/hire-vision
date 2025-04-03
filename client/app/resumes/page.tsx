@@ -162,7 +162,7 @@ function ResumeViewer({ applicant }: { applicant: Applicant }) {
     );
 }
 
-export default async function Page({ searchParams }) {
+export default async function Resumes({ searchParams }) {
     const applicants = await getApplicants();
     const selectedApplicantId = (await searchParams).applicantId;
 

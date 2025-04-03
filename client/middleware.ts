@@ -3,7 +3,6 @@ import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
     const user = request.cookies.get("user")?.value;
-    console.log("USSSSSSSSSSSSSSSSSSSSSSSSER", user);
     const { pathname } = request.nextUrl;
 
     const isAuthRoute = pathname === "/";
