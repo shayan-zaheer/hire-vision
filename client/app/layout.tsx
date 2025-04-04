@@ -24,7 +24,7 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={ubuntu.variable}>
-                <div className="bg-[url('/purple-bg.png')] bg-cover bg-center min-h-screen py-6">
+                <div className="bg-[url('/purple-bg.png')] bg-cover bg-center min-h-screen">
                     <Toaster />
                     <Navbar />
                     {children}

@@ -2,9 +2,9 @@ import Image from "next/image"
 
 function Navbar() {
   return (
-    <div className="px-8 py-4 bg-white/10 backdrop-blur-lg rounded-full border border-white/20 shadow-lg font-ubuntu mx-8 flex justify-between text-gray-300">
+    <div className="sticky top-4 px-8 py-4 bg-white/10 backdrop-blur-lg rounded-full border border-white/20 shadow-lg font-ubuntu mx-8 flex justify-between text-gray-300 z-50">
         <Image src={"/hire-vision.png"} alt={"Hire Vision"} width={70} height={5} />
-        <ul className="hidden md:flex gap-x-16 items-center justify-center">
+        <ul className="hidden lg:flex gap-x-16 items-center justify-center">
             <li>Home</li>
             <li>Services</li>
             <li>Achievement</li>
