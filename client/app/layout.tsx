@@ -1,53 +1,14 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
+import { Ubuntu } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import Navbar from "@/components/Navbar";
 
-const gilroy = localFont({
-    src: [
-        {
-            path: "./fonts/Gilroy-Black.ttf",
-            weight: "900",
-            style: "normal",
-        },
-        {
-            path: "./fonts/Gilroy-ExtraBold.ttf",
-            weight: "800",
-            style: "normal",
-        },
-        {
-            path: "./fonts/Gilroy-Bold.ttf",
-            weight: "700",
-            style: "normal",
-        },
-        {
-            path: "./fonts/Gilroy-SemiBold.ttf",
-            weight: "600",
-            style: "normal",
-        },
-        {
-            path: "./fonts/Gilroy-Medium.ttf",
-            weight: "500",
-            style: "normal",
-        },
-        {
-            path: "./fonts/Gilroy-Regular.ttf",
-            weight: "400",
-            style: "normal",
-        },
-        {
-            path: "./fonts/Gilroy-Thin.ttf",
-            weight: "200",
-            style: "normal",
-        },
-        {
-            path: "./fonts/Gilroy-UltraLight.ttf",
-            weight: "100",
-            style: "normal",
-        },
-    ],
-    variable: "--font-addgilroy",
+const ubuntu = Ubuntu({
+    subsets: ["latin"],
+    weight: ["400", "700"],
+    display: "swap",
+    variable: "--font-ubuntu",
 });
 
 export const metadata: Metadata = {
@@ -62,10 +23,10 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <body className={gilroy.variable}>
-                <div className="bg-[#14162e] text-white font-gilroy min-h-screen">
-                    <Navbar />
+            <body className={ubuntu.variable}>
+                <div className="bg-[url('/purple-bg.png')] bg-cover bg-center min-h-screen py-6">
                     <Toaster />
+                    <Navbar />
                     {children}
                 </div>
             </body>

@@ -1,70 +1,21 @@
-import ProfileDropdown from "./ProfileDropdown";
-import getUserFromCookies from "@/utils/get-user";
-import Link from "next/link";
+import Image from "next/image"
 
-async function Navbar() {
-    const userData = await getUserFromCookies();
-    const isAuthenticated = !!userData;
-    const data = { profile: userData };
-
-    return (
-        <nav className="h-[10vh] flex justify-between px-6 bg-[#14162e] text-white font-gilroy max-sm:text-sm">
-            <ul className="flex items-center gap-4">
-                {isAuthenticated && (
-                    <>
-                        <li>
-                            <Link
-                                href="/dashboard"
-                                className="hover:underline hover:text-gray-300 transition-colors duration-200"
-                            >
-                                Dashboard
-                            </Link>
-                        </li>
-                        <li>
-                            <Link
-                                href="/jobs"
-                                className="hover:underline hover:text-gray-300 transition-colors duration-200"
-                            >
-                                Jobs
-                            </Link>
-                        </li>
-                        <li>
-                            <Link
-                                href="/resumes"
-                                className="hover:underline hover:text-gray-300 transition-colors duration-200"
-                            >
-                                Resumes
-                            </Link>
-                        </li>
-                   </>
-                )}
-            </ul>
-            <ul className="flex items-center gap-4">
-                {isAuthenticated ? (
-                    <ProfileDropdown profile={data.profile} />
-                ) : (
-                    <>
-                        <li>
-                            <Link
-                                href="/login"
-                                className="hover:underline hover:text-gray-300 transition-colors duration-200"
-                            >
-                                Login
-                            </Link>
-                        </li>
-                        <li>
-                            <Link
-                                href="/signup"
-                                className="hover:underline hover:text-gray-300 transition-colors duration-200"
-                            >
-                                Signup
-                            </Link>
-                        </li>
-                    </>
-                )}
-            </ul>
-        </nav>
-    );
+function Navbar() {
+  return (
+    <div className="px-8 py-4 bg-white/10 backdrop-blur-lg rounded-full border border-white/20 shadow-lg font-ubuntu mx-8 flex justify-between text-gray-300">
+        <Image src={"/hire-vision.png"} alt={"Hire Vision"} width={70} height={5} />
+        <ul className="hidden md:flex gap-x-16 items-center justify-center">
+            <li>Home</li>
+            <li>Services</li>
+            <li>Achievement</li>
+            <li>About Us</li>
+        </ul>
+        <div className="flex space-x-4">
+            <button className="px-8 py-3 bg-white/10 backdrop-blur-sm rounded-full">Sign Up</button>
+            <button className="px-8 py-3 bg-purple-700 rounded-full">Log In</button>
+        </div>
+    </div>
+  )
 }
 
-export default Navbar;
+export default Navbar
