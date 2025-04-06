@@ -1,15 +1,32 @@
 "use client";
 
+import Card from "@/components/Card";
 import { Compare } from "@/components/ui/compare";
 import { FlipWords } from "@/components/ui/flip-words";
 import ReactLenis from "@studio-freight/react-lenis";
+
+const cards = [
+    {
+        title: "Efficient Candidate Screening",
+        content: "Say goodbye to manual resume reviews. HireVision uses AI to quickly analyze candidate profiles and match them with your job requirements.",
+        buttonText: "Start Screening Now"
+    }, {
+        title: "CV Management Made Easy",
+        content: "Easily manage and review candidate CVs in real-time. HireVision's admin interface lets you track, sort, and make decisions faster.",
+        buttonText: "Manage CVs"
+    }, {
+        title: "WA Chatbot for Candidate Interaction",
+        content: "With HireVision's WhatsApp integration, candidates can interact with the chatbot to get instant responses to job inquiries and updates.",
+        buttonText: "Try the Chatbot"
+    }
+]
 
 function page() {
     return (
         <ReactLenis root>
             <div className="sm:px-10 flex flex-col justify-center items-center">
                 <div className="flex flex-col sm:flex-row sm:justify-center items-center w-full gap-8 py-10">
-                    <h1                        className="text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-[#00E8FC] via-[#D400A5] to-[#6A00F4] animate-gradient bg-clip-text text-transparent text-center sm:text-left"
+                    <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-[#00E8FC] via-[#D400A5] to-[#6A00F4] animate-gradient bg-clip-text text-transparent text-center sm:text-left"
                     >
                         Discover
                         <br />
@@ -33,6 +50,11 @@ function page() {
                             className="w-full h-full object-contain animate-spin-slow scale-90"
                         />
                     </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 py-6 sm:px-10 px-4">
+                    {cards.map((card, index) => (
+                        <Card key={index} title={card.title} content={card.content} buttonText={card.buttonText}/>
+                    ))}
                 </div>
             </div>
             <div className="bg-[rgb(5,0,32)] flex justify-center items-center w-full py-6 sm:px-10">
