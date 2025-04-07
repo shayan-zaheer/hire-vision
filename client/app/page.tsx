@@ -73,7 +73,7 @@ function page() {
                         <h2 className="font-semibold mb-4 text-3xl md:text-4xl">
                             From Tedious to Effortless
                         </h2>
-                        <p className="text-lg md:text-xl text-muted-foreground text-left">
+                        <p className="text-lg md:text-xl text-muted-foreground sm:text-left text-center">
                             Whether you're looking to{" "}
                             <FlipWords
                                 words={[

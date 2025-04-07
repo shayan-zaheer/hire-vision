@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Ubuntu } from "next/font/google";
+import { Ubuntu, Poppins } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import Navbar from "@/components/Navbar";
@@ -9,6 +9,13 @@ const ubuntu = Ubuntu({
     weight: ["400", "700"],
     display: "swap",
     variable: "--font-ubuntu",
+});
+
+const poppins = Poppins({
+    subsets: ["latin"],
+    weight: ["400", "700"],
+    display: "swap",
+    variable: "--font-poppins",
 });
 
 export const metadata: Metadata = {
@@ -23,7 +30,7 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <body className={ubuntu.variable}>
+            <body className={`${ubuntu.variable} ${poppins.variable}`}>
                 <div className="bg-[url('/purple-bg.png')] bg-cover bg-center">
                     <Toaster />
                     <Navbar />
